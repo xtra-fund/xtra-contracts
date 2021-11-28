@@ -364,6 +364,10 @@ contract Xtra is
     ///@notice Activates Allocation using exteranl erc20 token
     ///@dev Requires .approve() to this contract address for spending external token
     function activateAllocation() external {
+        require(
+            _stakingStartDate < block.timestamp,
+            "Activation is not enabled yet"
+        );
         IERC20 token = IERC20(_allocationTokenAddress);
         uint256 balance = token.balanceOf(msg.sender);
         require(balance > 1000 ether, "No allocation founded");
