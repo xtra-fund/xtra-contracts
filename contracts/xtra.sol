@@ -61,6 +61,7 @@ contract Xtra is
         _pancakeFactoryAddress = _psFactoryAddress;
         _stableCoinAddress = _stableAddress;
         _allocationTokenAddress = _allocationToken;
+        _mint(address(this), 20000000000 ether);
     }
 
     /// ----- VIEWS ----- ///
@@ -205,7 +206,7 @@ contract Xtra is
     ///@param _receiverAddress - Address which recieves sale tokens
     function distributeSale(address _receiverAddress) external onlyOwner {
         require(_sale_tokens > 0, "Cant distribute more than cap");
-        _mint(_receiverAddress, _sale_tokens);
+        _transfer(address(this), _receiverAddress, _sale_tokens);
         _sale_tokens = 0;
     }
 
@@ -219,7 +220,7 @@ contract Xtra is
     {
         require(_lp_tokens - _amount >= 0, "Cant distribute more than cap");
         _lp_tokens -= _amount;
-        _mint(_receiverAddress, _amount);
+        _transfer(address(this), _receiverAddress, _amount);
     }
 
     ///@notice Distribute(mint) loan fund tokens. Executable by contract owner only.
@@ -233,7 +234,7 @@ contract Xtra is
         require(_loan_fund - _amount >= 0, "Cant distribute more than cap");
         //TODO once per quartal
         _loan_fund -= _amount;
-        _mint(_receiverAddress, _amount);
+        _transfer(address(this), _receiverAddress, _amount);
     }
 
     /// ----- INTERNAL FUNCTIONS ----- ///
@@ -281,7 +282,8 @@ contract Xtra is
                     );
                     uint256 stakingTokens = (60 * inv.amount) / 100;
                     uint256 vestingTokens = (30 * inv.amount) / 100;
-                    _mint(
+                    _transfer(
+                        address(this),
                         msg.sender,
                         inv.amount - vestingTokens - stakingTokens
                     );
@@ -298,7 +300,6 @@ contract Xtra is
                         _stakingStartDate,
                         _initialTokenPrice
                     );
-                    _mint(address(this), stakingTokens);
                     _seed_tokens -= inv.amount;
                     emit withdrawInvest(msg.sender, POOL_SEED, inv.amount);
                 } else if (inv.pool == POOL_PRESALE) {
@@ -308,7 +309,8 @@ contract Xtra is
                     );
                     uint256 stakingTokens = (50 * inv.amount) / 100;
                     uint256 vestingTokens = (40 * inv.amount) / 100;
-                    _mint(
+                    _transfer(
+                        address(this),
                         msg.sender,
                         inv.amount - vestingTokens - stakingTokens
                     );
@@ -325,7 +327,6 @@ contract Xtra is
                         _stakingStartDate,
                         _initialTokenPrice
                     );
-                    _mint(address(this), stakingTokens);
                     _presale_tokens -= inv.amount;
                     emit withdrawInvest(msg.sender, POOL_PRESALE, inv.amount);
                 } else if (inv.pool == POOL_TEAM) {
@@ -335,7 +336,8 @@ contract Xtra is
                     );
                     uint256 stakingTokens = (60 * inv.amount) / 100;
                     uint256 vestingTokens = (30 * inv.amount) / 100;
-                    _mint(
+                    _transfer(
+                        address(this),
                         msg.sender,
                         inv.amount - vestingTokens - stakingTokens
                     );
@@ -352,7 +354,6 @@ contract Xtra is
                         _stakingStartDate,
                         _initialTokenPrice
                     );
-                    _mint(address(this), stakingTokens);
                     _team_tokens -= inv.amount;
                     emit withdrawInvest(msg.sender, POOL_TEAM, inv.amount);
                 }
@@ -375,7 +376,7 @@ contract Xtra is
         token.transferFrom(msg.sender, address(this), balance);
         uint256 stakingTokens = (60 * balance) / 100;
         uint256 vestingTokens = (30 * balance) / 100;
-        _mint(msg.sender, balance - vestingTokens - stakingTokens);
+        _transfer(address(this), msg.sender, balance - vestingTokens - stakingTokens);
         _addVesting(msg.sender, 12, vestingTokens, _stakingStartDate);
         _stake(
             msg.sender,
@@ -384,7 +385,6 @@ contract Xtra is
             _stakingStartDate,
             _initialTokenPrice
         );
-        _mint(address(this), stakingTokens);
         _presale2_tokens -= balance;
         _totalInvestitions -= balance;
         emit withdrawInvest(msg.sender, POOL_PRESALE2, balance);
@@ -522,7 +522,7 @@ contract Xtra is
         _vestings[msg.sender][_slot].withdrawnParts =
             _vestings[msg.sender][_slot].withdrawnParts +
             toWithdrawParts;
-        _mint(msg.sender, tokensToMint);
+        _transfer(address(this), msg.sender, tokensToMint);
         emit MintedFromVesting(msg.sender, _slot, tokensToMint);
         _totalVestings -= tokensToMint;
     }
