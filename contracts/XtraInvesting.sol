@@ -11,7 +11,7 @@ contract XtraInvesting {
         uint256 pool;
         bool withdrawn;
     }
-    uint256 internal _totalInvestitions = 1500000000 ether; //initial value = max allocation tokens 
+    uint256 internal _totalInvestitions = 15e8 ether; //initial value = max allocation tokens 
     mapping(address => mapping(uint256 => InvestData)) internal _investitions;
     mapping(address => uint256) internal _investitionsOfUser;
 
@@ -86,7 +86,7 @@ contract XtraInvesting {
             sum += actAmount;
         }
         require(
-            _totalInvestitions + sum <= 6500000000 ether,
+            _totalInvestitions + sum <= 65e8 ether,
             "Max invest reached"
         );
         _totalInvestitions += sum;

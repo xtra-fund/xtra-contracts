@@ -6,7 +6,7 @@ pragma solidity ^0.8.7;
 /// @notice Contract was not audited
 contract XtraVesting {
     /// ----- VARIABLES ----- ///
-    uint256 internal _vestingLastDate;
+    uint256 internal immutable _vestingLastDate;
     struct Vesting {
         uint256 startDate;
         uint256 duration;

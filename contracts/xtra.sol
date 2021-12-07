@@ -31,26 +31,26 @@ contract Xtra is
     uint256 internal constant POOL_TEAM = 4;
 
     /// Max supply
-    uint256 internal _seed_tokens = 1000000000 * 10**18; //1 mlrd
-    uint256 internal _presale_tokens = 2000000000 * 10**18; //2 mlrd
-    uint256 internal _presale2_tokens = 1500000000 * 10**18; //1,5 mlrd
-    uint256 internal _sale_tokens = 1500000000 * 10**18; //1,5 mlrd
-    uint256 internal _team_tokens = 2000000000 * 10**18; //2 mlrd
-    uint256 internal _lp_tokens = 2000000000 * 10**18; //2 mlrd
-    uint256 internal _loan_fund = 10000000000 * 10**18; //10 mlrd
+    uint256 internal _seed_tokens = 1e9 ether; //1 mlrd
+    uint256 internal _presale_tokens = 2e9 ether; //2 mlrd
+    uint256 internal _presale2_tokens = 15e8 ether; //1,5 mlrd
+    uint256 internal _sale_tokens = 15e8 ether; //1,5 mlrd
+    uint256 internal _team_tokens = 2e9 ether; //2 mlrd
+    uint256 internal _lp_tokens = 2e9 ether; //2 mlrd
+    uint256 internal _loan_fund = 1e10 ether; //10 mlrd
 
     /// Token price
-    uint256 internal _initialTokenPrice = 10**5;
+    uint256 internal constant _initialTokenPrice = 10**5;
 
     /// Test only variable
     // uint256 _testTokenPrice = 10**6; //TODO: Delete on prod
 
     /// Pancakeswap addresses
-    address internal _pancakeFactoryAddress;
-    address internal _stableCoinAddress;
+    address internal immutable _pancakeFactoryAddress;
+    address internal immutable _stableCoinAddress;
 
     /// Bep20 allocation token address
-    address internal _allocationTokenAddress;
+    address internal immutable _allocationTokenAddress;
 
     /// ----- CONSTRUCTOR ----- ///
     constructor(
@@ -218,7 +218,7 @@ contract Xtra is
         external
         onlyOwner
     {
-        require(_lp_tokens - _amount >= 0, "Cant distribute more than cap");
+        require(_lp_tokens  >= _amount, "Cant distribute more than cap");
         _lp_tokens -= _amount;
         _transfer(address(this), _receiverAddress, _amount);
     }
@@ -231,7 +231,7 @@ contract Xtra is
         external
         onlyOwner
     {
-        require(_loan_fund - _amount >= 0, "Cant distribute more than cap");
+        require(_loan_fund  >= _amount, "Cant distribute more than cap");
         //TODO once per quartal
         _loan_fund -= _amount;
         _transfer(address(this), _receiverAddress, _amount);
@@ -251,6 +251,14 @@ contract Xtra is
             return ((Res1 * 10**8) / Res0);
         } else return ((Res0 * 10**8) / Res1);
         // return (_testTokenPrice);
+    }
+
+    ///@dev Returns true if caller is contract
+    ///@return true when caller addr is contract
+    function _isContract(address addr) internal view returns (bool) {
+        uint size;
+        assembly { size := extcodesize(addr) }
+        return size > 0;
     }
 
     /// ----- TEST FUNCTIONS ----- ///
@@ -277,7 +285,7 @@ contract Xtra is
                 _investitions[msg.sender][i].withdrawn = true;
                 if (inv.pool == POOL_SEED) {
                     require(
-                        _seed_tokens - inv.amount >= 0,
+                        _seed_tokens  >= inv.amount,
                         "Cant claim more than cap"
                     );
                     uint256 stakingTokens = (60 * inv.amount) / 100;
@@ -304,7 +312,7 @@ contract Xtra is
                     emit withdrawInvest(msg.sender, POOL_SEED, inv.amount);
                 } else if (inv.pool == POOL_PRESALE) {
                     require(
-                        _presale_tokens - inv.amount >= 0,
+                        _presale_tokens  >= inv.amount,
                         "Cant claim more than cap"
                     );
                     uint256 stakingTokens = (50 * inv.amount) / 100;
@@ -331,7 +339,7 @@ contract Xtra is
                     emit withdrawInvest(msg.sender, POOL_PRESALE, inv.amount);
                 } else if (inv.pool == POOL_TEAM) {
                     require(
-                        _team_tokens - inv.amount >= 0,
+                        _team_tokens  >= inv.amount,
                         "Cant claim more than cap"
                     );
                     uint256 stakingTokens = (60 * inv.amount) / 100;
@@ -372,7 +380,7 @@ contract Xtra is
         IERC20 token = IERC20(_allocationTokenAddress);
         uint256 balance = token.balanceOf(msg.sender);
         require(balance > 1000 ether, "No allocation founded");
-        require(_presale2_tokens - balance >= 0, "Cant activate more than cap");
+        require(_presale2_tokens  >= balance, "Cant activate more than cap");
         token.transferFrom(msg.sender, address(this), balance);
         uint256 stakingTokens = (60 * balance) / 100;
         uint256 vestingTokens = (30 * balance) / 100;
@@ -394,7 +402,7 @@ contract Xtra is
     ///@param _amount Amount of tokens to stake
     ///@param _duration Stake duration in days
     function stake(uint256 _amount, uint256 _duration) external {
-        require(msg.sender == tx.origin, "Smart Contracts calls not allowed");
+        require(msg.sender == tx.origin && !_isContract(msg.sender), "Smart Contracts calls not allowed");
         _transfer(msg.sender, address(this), _amount);
         _stake(
             msg.sender,
@@ -409,7 +417,7 @@ contract Xtra is
     ///@dev Can be wthdrawn only once
     ///@param _slot Slot to unstake
     function unstake(uint256 _slot) external {
-        require(msg.sender == tx.origin, "Smart Contracts calls not allowed");
+        require(msg.sender == tx.origin && !_isContract(msg.sender), "Smart Contracts calls not allowed");
         Stake memory s = _stakes[msg.sender][_slot];
         require(s.endPrice == 0, "Cant be unstaked again");
         uint256 actPrice = _getTokenPrice();
@@ -467,7 +475,7 @@ contract Xtra is
     ///@notice Liquidate stake position
     ///@param _slot Stake slot
     function liquidateStake(uint256 _slot) external {
-        require(msg.sender == tx.origin, "Smart Contracts calls not allowed");
+        require(msg.sender == tx.origin && !_isContract(msg.sender), "Smart Contracts calls not allowed");
         require(
             _stakes[msg.sender][_slot].endPrice == 0,
             "Cant be unstaked again"

@@ -8,14 +8,14 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 /// @notice Contract was not audited
 contract XtraStaking is Ownable {
     /// ----- VARIABLES ----- ///
-    uint256 internal _xtra_fund = 80000000000 * 10**18; //80 mlrd
+    uint256 internal _xtra_fund = 8e9 ether; //80 mlrd
 
-    uint256 internal DAYS_LIMIT_1 = 729;
-    uint256 internal DAYS_LIMIT_2 = 3649;
-    uint256 internal DAYS_LIMIT_MAX = 6000;
+    uint256 internal constant DAYS_LIMIT_1 = 729;
+    uint256 internal constant DAYS_LIMIT_2 = 3649;
+    uint256 internal constant DAYS_LIMIT_MAX = 6000;
 
-    uint256 internal PERC_LIMIT_1 = 14;
-    uint256 internal PERC_LIMIT_2 = 10;
+    uint256 internal constant PERC_LIMIT_1 = 14;
+    uint256 internal constant PERC_LIMIT_2 = 10;
 
     uint256 internal _totalStaked = 0;
     uint256 internal _stakingStartDate;
@@ -182,7 +182,7 @@ contract XtraStaking is Ownable {
     ///@return 0 durationBonus - amount bonus in percent * 10**11
     function _longerDurationBonus(uint256 _duration)
         internal
-        view
+        pure
         returns (uint256)
     {
         if (_duration <= DAYS_LIMIT_1) {
@@ -212,7 +212,7 @@ contract XtraStaking is Ownable {
     ///@return 2 roi - roi
     function _calculateRoi(uint256 _amount, uint256 _duration)
         internal
-        view
+        pure
         returns (
             uint256,
             uint256,
@@ -249,8 +249,8 @@ contract XtraStaking is Ownable {
     {
         Stake memory s = _stakes[_stakerAddress][_slot];
         uint256 actualPrice = _actualPrice;
-        uint256 startValue = (s.startPrice * s.amount) / 10**8; //1000000 * 1000000000000000
-        uint256 endValue = (actualPrice * s.amount) / 10**8; //600000 * 1000000000000000
+        uint256 startValue = (s.startPrice * s.amount) / 10**8;
+        uint256 endValue = (actualPrice * s.amount) / 10**8;
         uint256 roi = (startValue * s.roi) / 10**12;
         if (endValue == startValue) {
             return (s.amount, 0, false);
