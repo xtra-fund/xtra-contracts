@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 /// @notice Contract was not audited
 contract XtraStaking is Ownable {
     /// ----- VARIABLES ----- ///
-    uint256 internal _xtra_fund = 8e9 ether; //80 mlrd
+    uint256 internal _xtra_fund = 8e10 ether; //80 mlrd
 
     uint256 internal constant DAYS_LIMIT_1 = 729;
     uint256 internal constant DAYS_LIMIT_2 = 3649;
