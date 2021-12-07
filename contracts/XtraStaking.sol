@@ -124,7 +124,7 @@ contract XtraStaking is Ownable {
     ///@return 2 roi - roi
     function calculateRoi(uint256 _amount, uint256 _duration)
         external
-        view
+        pure
         returns (
             uint256,
             uint256,
