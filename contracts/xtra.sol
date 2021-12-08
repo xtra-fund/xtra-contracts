@@ -61,7 +61,7 @@ contract Xtra is
         _pancakeFactoryAddress = _psFactoryAddress;
         _stableCoinAddress = _stableAddress;
         _allocationTokenAddress = _allocationToken;
-        _mint(address(this), 20000000000 ether);
+        _mint(address(this), 2e10 ether);
     }
 
     /// ----- VIEWS ----- ///
