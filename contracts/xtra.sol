@@ -11,9 +11,9 @@ import "./XtraStaking.sol";
 import "./XtraVesting.sol";
 import "./XtraInvesting.sol";
 
-/// @title Xtra Fund Contract
+/// @title Xtra Fund Contract - https://xtra.fund
 /// @author bs
-/// @notice Contract was not audited
+/// @notice Audited by Hacken
 contract Xtra is
     ERC20,
     ERC20Burnable,
@@ -41,9 +41,6 @@ contract Xtra is
 
     /// Token price
     uint256 internal constant _initialTokenPrice = 10**5;
-
-    /// Test only variable
-    // uint256 _testTokenPrice = 10**6; //TODO: Delete on prod
 
     /// Pancakeswap addresses
     address internal immutable _pancakeFactoryAddress;
@@ -232,7 +229,6 @@ contract Xtra is
         onlyOwner
     {
         require(_loan_fund  >= _amount, "Cant distribute more than cap");
-        //TODO once per quartal
         _loan_fund -= _amount;
         _transfer(address(this), _receiverAddress, _amount);
     }
@@ -250,7 +246,6 @@ contract Xtra is
         if (pair.token0() == address(this)) {
             return ((Res1 * 10**8) / Res0);
         } else return ((Res0 * 10**8) / Res1);
-        // return (_testTokenPrice);
     }
 
     ///@dev Returns true if caller is contract
@@ -260,12 +255,6 @@ contract Xtra is
         assembly { size := extcodesize(addr) }
         return size > 0;
     }
-
-    /// ----- TEST FUNCTIONS ----- ///
-    //TODO: remove before prod
-    // function setTokenPrice(uint256 _newPrice) external {
-    //     _testTokenPrice = _newPrice;
-    // }
 
     /// ----- EXTERNAL FUNCTIONS ----- ///
     ///@notice Activate all investitions of address

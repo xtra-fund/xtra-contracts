@@ -3,7 +3,7 @@ pragma solidity ^0.8.7;
 
 /// @title Xtra Invest Contract
 /// @author bs
-/// @notice Contract was not audited
+/// @notice Audited by Hacken
 contract XtraInvesting {
     /// ----- VARIABLES ----- ///
     struct InvestData {

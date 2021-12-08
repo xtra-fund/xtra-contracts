@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title Xtra Staking Contract
 /// @author bs
-/// @notice Contract was not audited
+/// @notice Audited by Hacken
 contract XtraStaking is Ownable {
     /// ----- VARIABLES ----- ///
     uint256 internal _xtra_fund = 8e10 ether; //80 mlrd

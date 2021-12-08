@@ -3,7 +3,7 @@ pragma solidity ^0.8.7;
 
 /// @title Xtra Vesting Contract
 /// @author bs
-/// @notice Contract was not audited
+/// @notice Audited by Hacken
 contract XtraVesting {
     /// ----- VARIABLES ----- ///
     uint256 internal immutable _vestingLastDate;
